@@ -19,4 +19,5 @@ Our preferred color pallet included in `data/color_pallet.csv`.
 
 The examples given are more intricate than our desired final product.  
 Overall the visuals should be easy to understand, and not overly busy as these are consumer facing charts.  
+There is a mock up of a similar app in `MockUp.pdf` as a rough style guide.
 
