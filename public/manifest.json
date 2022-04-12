@@ -1,0 +1,9 @@
+{
+  "short_name": "Moby Technical Indicator Charts",
+  "name": "Moby Technical Indicator Charts",
+  "icons": [],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

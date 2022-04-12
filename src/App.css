@@ -1,0 +1,73 @@
+body {
+  font-family: Poppins;
+  padding: 0;
+  margin: 0;
+}
+
+#tickerList {
+  margin-left: 10px;
+  /* margin-top: 20px; */
+
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 220px;
+
+  overflow-y: auto;
+}
+
+#tickerList a {
+  display: block;
+}
+
+#contentGrid {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 220px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+
+  column-gap: 20px;
+  row-gap: 20px;
+}
+
+#tickerList a {
+  color: #332f4f;
+  text-decoration: none;
+}
+
+#tickerList a.selected {
+  font-weight: 700;
+}
+
+.App {
+  /* width: 500px; */
+  /* border: solid 1px #000; */
+  /* display: flex; */
+  position: relative;
+  height: 100vh;
+}
+
+.viz-wrapper {
+  height: 100%;
+}
+
+svg {
+  display: block;
+}
+
+.mainChartLine {
+  stroke-width: 3px;
+  stroke: #06cbf8;
+  fill: none;
+}
+
+text {
+  font-family: Poppins;
+  font-size: 14px;
+}
