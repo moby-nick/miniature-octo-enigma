@@ -36,6 +36,13 @@ body {
   row-gap: 20px;
 }
 
+/* @media only screen and (max-width: 800px) {
+  #contentGrid {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+  }
+} */
+
 #tickerList a {
   color: #332f4f;
   text-decoration: none;
@@ -61,9 +68,21 @@ svg {
   display: block;
 }
 
+.selectionCircle {
+  fill: #06cbf8;
+  stroke:white;
+  stroke-width: 2px;
+}
+
 .mainChartLine {
   stroke-width: 3px;
   stroke: #06cbf8;
+  fill: none;
+}
+
+.backdropLine {
+  stroke-width: 6px;
+  stroke: white;
   fill: none;
 }
 

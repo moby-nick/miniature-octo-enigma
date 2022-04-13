@@ -19,7 +19,7 @@ const useResizeObserver = (ref) => {
   return dimensions;
 };
 
-function AdxChart({ config, setConfig, margin }) {
+function PriceChart({ config, setConfig, margin }) {
   const svgRef = useRef();
   const wrapperRef = useRef();
   const wrapDim = useResizeObserver(wrapperRef);
@@ -34,7 +34,7 @@ function AdxChart({ config, setConfig, margin }) {
   // trend_sma_slow: 367.33209
 
   useEffect(() => {
-    console.log("entering Adx with selected ", config.selected);
+    console.log('entering Price with selected ', config.selected)
     const svg = d3.select(svgRef.current);
 
     svg.selectAll("*").remove();
@@ -42,35 +42,11 @@ function AdxChart({ config, setConfig, margin }) {
 
     const width = wrapDim.width;
     const height = wrapDim.height < 400 ? 400 : wrapDim.height;
-
     const dates = config.data.map((d) => d.date);
-
-    svg
-      .append("defs")
-      .append("linearGradient")
-      .attr("id", "line-gradient-adx")
-      .attr("gradientUnits", "userSpaceOnUse")
-      .attr("x1", 0)
-      .attr("y1", 0)
-      .attr("x2", 0)
-      .attr("y2", height)
-      .selectAll("stop")
-      .data([
-        { offset: "20%", color: "green" },
-        { offset: "75%", color: "white" },
-        { offset: "90%", color: "red" },
-      ])
-      .enter()
-      .append("stop")
-      .attr("offset", function (d) {
-        return d.offset;
-      })
-      .attr("stop-color", function (d) {
-        return d.color;
-      });
 
     svg.attr("width", "100%").attr("height", "100%");
 
+    // console.log("rokam sa ", config);
     const x = d3
       .scaleUtc()
       .domain(d3.extent(config.data, (d) => d.date))
@@ -78,13 +54,13 @@ function AdxChart({ config, setConfig, margin }) {
 
     const y = d3
       .scaleLinear()
-      .domain([0, 100])
+      .domain([0, d3.max(config.data, (d) => d.close) * 1.1])
       .range([height - margin.bottom, margin.top]);
 
     const line = d3
       .line()
       .x((d) => x(d.date))
-      .y((d) => y(d.trend_adx))
+      .y((d) => y(d.close))
       .curve(d3.curveCardinal);
 
     const axes = svg.append("g");
@@ -95,8 +71,8 @@ function AdxChart({ config, setConfig, margin }) {
       .attr("y", margin.top)
       .attr("width", width - margin.left - margin.right)
       .attr("height", height - margin.top - margin.bottom)
-      .attr("fill", "url(#line-gradient-adx)")
-      .attr("opacity", 0.35)
+      .attr("fill", "black")
+      .attr("opacity", 0.03)
       .on("mousemove", (event) => {
         var mouse = d3.pointer(event);
         const xm = x.invert(mouse[0]);
@@ -115,6 +91,7 @@ function AdxChart({ config, setConfig, margin }) {
           setConfig({ ...config, selected: i });
         }
       });
+
     const yGrid = (g) =>
       g
         .attr("transform", `translate(${margin.left},0)`)
@@ -143,7 +120,7 @@ function AdxChart({ config, setConfig, margin }) {
       .attr("font-size", 12)
       // .attr("font-weight", "bold")
       .attr("text-anchor", "end")
-      .text(`${d3.timeFormat("%d %b, %Y")(config.data[selected].date)}: ${d3.format(",.0f")(config.data[selected].trend_adx)}%`);
+      .text(`${d3.timeFormat("%d %b, %Y")(config.data[selected].date)}: ${d3.format("$,.2f")(config.data[selected].close)}`);
     }
 
     axes
@@ -152,14 +129,15 @@ function AdxChart({ config, setConfig, margin }) {
       .call(d3.axisBottom(x).ticks(4))
       .call((g) => g.select(".domain").remove());
 
+    function formatTick(d) {
+      const s = d3.format(",")(d);
+      return this.parentNode.nextSibling ? `\xa0${s}` : `$${s}`;
+    }
     axes
       .append("g")
       .attr("transform", `translate(${margin.left},0)`)
-      .call(d3.axisLeft(y).ticks(4).tickFormat(d3.format("~s")))
+      .call(d3.axisLeft(y).ticks(4).tickFormat(formatTick))
       .call((g) => g.select(".domain").remove())
-      .call((g) =>
-        g.select(".tick:last-of-type text").append("tspan").text("%")
-      )
       .call((g) =>
         g
           .append("text")
@@ -171,23 +149,8 @@ function AdxChart({ config, setConfig, margin }) {
           .attr("font-size", 12)
           // .attr("font-weight", "bold")
           .attr("text-anchor", "start")
-          .text(`${config.ticker} Average Directional Index`)
+          .text(`${config.ticker} Price`)
       );
-
-    content
-      .append("path")
-      .attr("class", "backdropLine")
-      // .attr(
-      //   "d",
-      //   line(
-      //     config.data.map((d) => {
-      //       return { ...d, trend_adx: 0 };
-      //     })
-      //   )
-      // )
-      // .transition()
-      // .duration(1000)
-      .attr("d", line(config.data));
 
     content
       .append("path")
@@ -196,7 +159,7 @@ function AdxChart({ config, setConfig, margin }) {
       //   "d",
       //   line(
       //     config.data.map((d) => {
-      //       return { ...d, trend_adx: 0 };
+      //       return { ...d, close: 0 };
       //     })
       //   )
       // )
@@ -204,14 +167,13 @@ function AdxChart({ config, setConfig, margin }) {
       // .duration(1000)
       .attr("d", line(config.data));
 
-    content
+      content
       .append("circle")
       .attr("cx", config.selected ? x(config.data[selected].date) : 0)
-      .attr("cy", config.selected ? y(config.data[selected].trend_adx) : 0)
+      .attr("cy", config.selected ? y(config.data[selected].close) : 0)
       .attr("r", 5)
       .attr("class", "selectionCircle");
 
-    // svg.append("text").attr("x", 100).attr("y", 100).text(config.ticker);
   }, [wrapDim, config]);
 
   return (
@@ -221,4 +183,4 @@ function AdxChart({ config, setConfig, margin }) {
   );
 }
 
-export default AdxChart;
+export default PriceChart;

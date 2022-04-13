@@ -13,6 +13,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "deploy": "aws s3 sync ./build s3://cti.moby.co --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --profile delta",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

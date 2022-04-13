@@ -19,7 +19,7 @@ const useResizeObserver = (ref) => {
   return dimensions;
 };
 
-function AdxChart({ config, setConfig, margin }) {
+function RsiChart({ config, setConfig, margin }) {
   const svgRef = useRef();
   const wrapperRef = useRef();
   const wrapDim = useResizeObserver(wrapperRef);
@@ -34,7 +34,7 @@ function AdxChart({ config, setConfig, margin }) {
   // trend_sma_slow: 367.33209
 
   useEffect(() => {
-    console.log("entering Adx with selected ", config.selected);
+    console.log("entering Rsi with selected ", config.selected);
     const svg = d3.select(svgRef.current);
 
     svg.selectAll("*").remove();
@@ -48,7 +48,7 @@ function AdxChart({ config, setConfig, margin }) {
     svg
       .append("defs")
       .append("linearGradient")
-      .attr("id", "line-gradient-adx")
+      .attr("id", "line-gradient-rsi")
       .attr("gradientUnits", "userSpaceOnUse")
       .attr("x1", 0)
       .attr("y1", 0)
@@ -56,9 +56,10 @@ function AdxChart({ config, setConfig, margin }) {
       .attr("y2", height)
       .selectAll("stop")
       .data([
-        { offset: "20%", color: "green" },
-        { offset: "75%", color: "white" },
-        { offset: "90%", color: "red" },
+        { offset: "20%", color: "red" },
+        { offset: "40%", color: "white" },
+        { offset: "60%", color: "white" },
+        { offset: "80%", color: "green" },
       ])
       .enter()
       .append("stop")
@@ -71,6 +72,7 @@ function AdxChart({ config, setConfig, margin }) {
 
     svg.attr("width", "100%").attr("height", "100%");
 
+    // console.log("rokam sa ", config);
     const x = d3
       .scaleUtc()
       .domain(d3.extent(config.data, (d) => d.date))
@@ -84,7 +86,7 @@ function AdxChart({ config, setConfig, margin }) {
     const line = d3
       .line()
       .x((d) => x(d.date))
-      .y((d) => y(d.trend_adx))
+      .y((d) => y(d.momentum_rsi))
       .curve(d3.curveCardinal);
 
     const axes = svg.append("g");
@@ -95,7 +97,7 @@ function AdxChart({ config, setConfig, margin }) {
       .attr("y", margin.top)
       .attr("width", width - margin.left - margin.right)
       .attr("height", height - margin.top - margin.bottom)
-      .attr("fill", "url(#line-gradient-adx)")
+      .attr("fill", "url(#line-gradient-rsi)")
       .attr("opacity", 0.35)
       .on("mousemove", (event) => {
         var mouse = d3.pointer(event);
@@ -115,6 +117,7 @@ function AdxChart({ config, setConfig, margin }) {
           setConfig({ ...config, selected: i });
         }
       });
+
     const yGrid = (g) =>
       g
         .attr("transform", `translate(${margin.left},0)`)
@@ -143,7 +146,7 @@ function AdxChart({ config, setConfig, margin }) {
       .attr("font-size", 12)
       // .attr("font-weight", "bold")
       .attr("text-anchor", "end")
-      .text(`${d3.timeFormat("%d %b, %Y")(config.data[selected].date)}: ${d3.format(",.0f")(config.data[selected].trend_adx)}%`);
+      .text(`${d3.timeFormat("%d %b, %Y")(config.data[selected].date)}: ${d3.format(",.0f")(config.data[selected].momentum_rsi)}%`);
     }
 
     axes
@@ -171,8 +174,20 @@ function AdxChart({ config, setConfig, margin }) {
           .attr("font-size", 12)
           // .attr("font-weight", "bold")
           .attr("text-anchor", "start")
-          .text(`${config.ticker} Average Directional Index`)
+          .text(`${config.ticker} Relative Strength Index`)
       );
+
+    //add the 50% dotted line
+    // content
+    //   .append("line")
+    //   .attr("x1", x.range()[0])
+    //   .attr("x2", x.range()[1])
+    //   .attr("y1", y(50))
+    //   .attr("y2", y(50))
+    //   .attr("stroke", "black")
+    //   // .attr('stroke-width', .5)
+    //   .attr("opacity", 0.4)
+    //   .attr("stroke-dasharray", "8,4");
 
     content
       .append("path")
@@ -181,7 +196,7 @@ function AdxChart({ config, setConfig, margin }) {
       //   "d",
       //   line(
       //     config.data.map((d) => {
-      //       return { ...d, trend_adx: 0 };
+      //       return { ...d, momentum_rsi: 0 };
       //     })
       //   )
       // )
@@ -196,7 +211,7 @@ function AdxChart({ config, setConfig, margin }) {
       //   "d",
       //   line(
       //     config.data.map((d) => {
-      //       return { ...d, trend_adx: 0 };
+      //       return { ...d, momentum_rsi: 0 };
       //     })
       //   )
       // )
@@ -207,11 +222,9 @@ function AdxChart({ config, setConfig, margin }) {
     content
       .append("circle")
       .attr("cx", config.selected ? x(config.data[selected].date) : 0)
-      .attr("cy", config.selected ? y(config.data[selected].trend_adx) : 0)
+      .attr("cy", config.selected ? y(config.data[selected].momentum_rsi) : 0)
       .attr("r", 5)
       .attr("class", "selectionCircle");
-
-    // svg.append("text").attr("x", 100).attr("y", 100).text(config.ticker);
   }, [wrapDim, config]);
 
   return (
@@ -221,4 +234,4 @@ function AdxChart({ config, setConfig, margin }) {
   );
 }
 
-export default AdxChart;
+export default RsiChart;
