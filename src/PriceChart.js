@@ -129,6 +129,7 @@ function PriceChart({ config, setConfig, margin }) {
       .selectAll(".fill-area")
       .data([config.data])
       .join("path")
+      .transition()
       .attr("class", "fill-area")
       .attr("fill", "black")
       .attr("fill-opacity", 0.1)
@@ -138,6 +139,7 @@ function PriceChart({ config, setConfig, margin }) {
       .selectAll(".backdropLine")
       .data([config.data])
       .join("path")
+      .transition()
       .attr("class", "backdropLine")
       .attr("d", line(config.data));
 
@@ -145,6 +147,7 @@ function PriceChart({ config, setConfig, margin }) {
       .selectAll(".mainChartLine")
       .data([config.data])
       .join("path")
+      .transition()
       .attr("class", "mainChartLine")
       .attr("d", line(config.data));
 

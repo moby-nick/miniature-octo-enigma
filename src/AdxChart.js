@@ -153,6 +153,7 @@ function AdxChart({ config, setConfig, margin }) {
       .selectAll(".fill-area")
       .data([config.data])
       .join("path")
+      .transition()
       .attr("class", "fill-area")
       .attr("fill", "url(#line-gradient-adx)")
       .attr("d", area(config.data));
@@ -161,6 +162,7 @@ function AdxChart({ config, setConfig, margin }) {
       .selectAll(".backdropLine")
       .data([config.data])
       .join("path")
+      .transition()
       .attr("class", "backdropLine")
       .attr("d", line(config.data));
 
@@ -168,6 +170,7 @@ function AdxChart({ config, setConfig, margin }) {
       .selectAll(".mainChartLine")
       .data([config.data])
       .join("path")
+      .transition()
       .attr("class", "mainChartLine gradients")
       .attr("d", line(config.data));
 
