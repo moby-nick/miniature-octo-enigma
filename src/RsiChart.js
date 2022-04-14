@@ -24,21 +24,10 @@ function RsiChart({ config, setConfig, margin }) {
   const wrapperRef = useRef();
   const wrapDim = useResizeObserver(wrapperRef);
 
-  let selected = config.selected;
-
-  // close: 396.536133
-  // date: Mon Apr 12 2021 02:00:00 GMT+0200 (Central European Summer Time) {}
-  // momentum_rsi: 55.40683407538983
-  // symbol: "AAVEUSD"
-  // trend_adx: 15.324558408856744
-  // trend_sma_slow: 367.33209
-
   useEffect(() => {
-    console.log("entering Rsi with selected ", config.selected);
-    const svg = d3.select(svgRef.current);
-
-    svg.selectAll("*").remove();
     if (!wrapDim) return;
+    // console.log("entering Rsi with selected ", config.selected);
+    const svg = d3.select(svgRef.current);
 
     const width = wrapDim.width;
     const height = wrapDim.height < 400 ? 400 : wrapDim.height;
@@ -46,8 +35,7 @@ function RsiChart({ config, setConfig, margin }) {
     const dates = config.data.map((d) => d.date);
 
     svg
-      .append("defs")
-      .append("linearGradient")
+      .select("#linear-gradient-rsi")
       .attr("id", "line-gradient-rsi")
       .attr("gradientUnits", "userSpaceOnUse")
       .attr("x1", 0)
@@ -56,10 +44,10 @@ function RsiChart({ config, setConfig, margin }) {
       .attr("y2", height)
       .selectAll("stop")
       .data([
-        { offset: "20%", color: "red" },
-        { offset: "40%", color: "white" },
-        { offset: "60%", color: "white" },
-        { offset: "80%", color: "green" },
+        { offset: "20%", color: "red", opacity: 0.6 },
+        { offset: "40%", color: "white", opacity: 0.6 },
+        { offset: "60%", color: "white", opacity: 0.6 },
+        { offset: "100%", color: "green", opacity: 0.6 },
       ])
       .enter()
       .append("stop")
@@ -68,11 +56,13 @@ function RsiChart({ config, setConfig, margin }) {
       })
       .attr("stop-color", function (d) {
         return d.color;
+      })
+      .attr("stop-opacity", function (d) {
+        return d.opacity;
       });
 
     svg.attr("width", "100%").attr("height", "100%");
 
-    // console.log("rokam sa ", config);
     const x = d3
       .scaleUtc()
       .domain(d3.extent(config.data, (d) => d.date))
@@ -89,34 +79,15 @@ function RsiChart({ config, setConfig, margin }) {
       .y((d) => y(d.momentum_rsi))
       .curve(d3.curveCardinal);
 
-    const axes = svg.append("g");
-    const content = svg.append("g").attr("class", "content");
-    content
-      .append("rect")
-      .attr("x", margin.left)
-      .attr("y", margin.top)
-      .attr("width", width - margin.left - margin.right)
-      .attr("height", height - margin.top - margin.bottom)
-      .attr("fill", "url(#line-gradient-rsi)")
-      .attr("opacity", 0.35)
-      .on("mousemove", (event) => {
-        var mouse = d3.pointer(event);
-        const xm = x.invert(mouse[0]);
-        const i1 = d3.bisectLeft(dates, xm, 1);
-        const i0 = i1 - 1;
-        const i = xm - dates[i0] > dates[i1] - xm ? i1 : i0;
+    const area = d3
+      .area()
+      .x((d) => x(d.date))
+      .y1((d) => y(d.momentum_rsi))
+      .y0((d) => y.range()[0])
+      .curve(d3.curveCardinal);
 
-        if (i >= 0 && i < config.data.length) {
-          // d3.select(".titleDate").text(d3.utcFormat("%b %d, %Y")(config.data[i].date));
-
-          // d3.selectAll(".hoverline")
-          //   .attr("x1", x(config.data[i].date))
-          //   .attr("x2", x(config.data[i].date))
-          //   .attr("display", null);
-
-          setConfig({ ...config, selected: i });
-        }
-      });
+    const axes = svg.select(".axes");
+    const content = svg.select(".content");
 
     const yGrid = (g) =>
       g
@@ -133,103 +104,127 @@ function RsiChart({ config, setConfig, margin }) {
           g.selectAll("line").attr("stroke", "black").attr("opacity", 0.2)
         );
 
-    axes.append("g").call(yGrid);
+    axes.select(".y-axis-grid").call(yGrid);
 
-    if(selected) {
-      axes
-      .append("text")
+    content
+      .select(".hoverText")
       .attr("x", width - margin.right - 10)
       .attr("y", margin.top)
       .attr("dy", -5)
       .attr("fill", "#000")
       .attr("opacity", 0.9)
       .attr("font-size", 12)
-      // .attr("font-weight", "bold")
       .attr("text-anchor", "end")
-      .text(`${d3.timeFormat("%d %b, %Y")(config.data[selected].date)}: ${d3.format(",.0f")(config.data[selected].momentum_rsi)}%`);
-    }
+      .text(
+        config.selected
+          ? `${d3.timeFormat("%d %b, %Y")(
+              config.data[config.selected].date
+            )}: ${d3.format(",.0f")(
+              config.data[config.selected].momentum_rsi
+            )}%`
+          : ""
+      );
 
     axes
-      .append("g")
+      .select(".x-axis-group")
       .attr("transform", `translate(0,${height - margin.bottom})`)
       .call(d3.axisBottom(x).ticks(4))
       .call((g) => g.select(".domain").remove());
 
     axes
-      .append("g")
+      .select(".y-axis-group")
       .attr("transform", `translate(${margin.left},0)`)
       .call(d3.axisLeft(y).ticks(4).tickFormat(d3.format("~s")))
       .call((g) => g.select(".domain").remove())
       .call((g) =>
         g.select(".tick:last-of-type text").append("tspan").text("%")
-      )
-      .call((g) =>
-        g
-          .append("text")
-          .attr("x", 5)
-          .attr("y", margin.top)
-          .attr("dy", -5)
-          .attr("fill", "#000")
-          .attr("opacity", 0.5)
-          .attr("font-size", 12)
-          // .attr("font-weight", "bold")
-          .attr("text-anchor", "start")
-          .text(`${config.ticker} Relative Strength Index`)
       );
 
-    //add the 50% dotted line
-    // content
-    //   .append("line")
-    //   .attr("x1", x.range()[0])
-    //   .attr("x2", x.range()[1])
-    //   .attr("y1", y(50))
-    //   .attr("y2", y(50))
-    //   .attr("stroke", "black")
-    //   // .attr('stroke-width', .5)
-    //   .attr("opacity", 0.4)
-    //   .attr("stroke-dasharray", "8,4");
+    axes
+      .select(".title-text")
+      .attr("x", margin.left + 5)
+      .attr("y", margin.top)
+      .attr("dy", -5)
+      .attr("fill", "#000")
+      .attr("opacity", 0.5)
+      .attr("font-size", 12)
+      // .attr("font-weight", "bold")
+      .attr("text-anchor", "start")
+      .text(`${config.ticker} Relative Strength Index`);
 
     content
-      .append("path")
+      .selectAll(".fill-area")
+      .data([config.data])
+      .join("path")
+      .attr("class", "fill-area")
+      .attr("fill", "url(#line-gradient-rsi)")
+      .attr("d", area(config.data));
+
+    content
+      .selectAll(".backdropLine")
+      .data([config.data])
+      .join("path")
       .attr("class", "backdropLine")
-      // .attr(
-      //   "d",
-      //   line(
-      //     config.data.map((d) => {
-      //       return { ...d, momentum_rsi: 0 };
-      //     })
-      //   )
-      // )
-      // .transition()
-      // .duration(1000)
       .attr("d", line(config.data));
 
     content
-      .append("path")
-      .attr("class", "mainChartLine")
-      // .attr(
-      //   "d",
-      //   line(
-      //     config.data.map((d) => {
-      //       return { ...d, momentum_rsi: 0 };
-      //     })
-      //   )
-      // )
-      // .transition()
-      // .duration(1000)
+      .selectAll(".mainChartLine")
+      .data([config.data])
+      .join("path")
+      .attr("class", "mainChartLine gradients")
       .attr("d", line(config.data));
 
     content
-      .append("circle")
-      .attr("cx", config.selected ? x(config.data[selected].date) : 0)
-      .attr("cy", config.selected ? y(config.data[selected].momentum_rsi) : 0)
+      .selectAll(".selectionCircle")
+      .attr("cx", config.selected ? x(config.data[config.selected].date) : 0)
+      .attr(
+        "cy",
+        config.selected ? y(config.data[config.selected].momentum_rsi) : 0
+      )
       .attr("r", 5)
-      .attr("class", "selectionCircle");
+      .attr("class", "selectionCircle gradients")
+      .raise();
+
+    svg
+      .selectAll(".overlayRect")
+      .attr("x", margin.left)
+      .attr("y", margin.top)
+      .attr("width", width - margin.left - margin.right)
+      .attr("height", height - margin.top - margin.bottom)
+      .attr("fill", "black")
+      .attr("opacity", 0)
+      .on("mousemove", (event) => {
+        var mouse = d3.pointer(event);
+        const xm = x.invert(mouse[0]);
+        const i1 = d3.bisectLeft(dates, xm, 1);
+        const i0 = i1 - 1;
+        const i = xm - dates[i0] > dates[i1] - xm ? i1 : i0;
+
+        if (i >= 0 && i < config.data.length) {
+          setConfig({ ...config, selected: i });
+        }
+      })
+      .raise();
   }, [wrapDim, config]);
 
   return (
     <div ref={wrapperRef} className="viz-wrapper">
-      <svg ref={svgRef}></svg>
+      <svg ref={svgRef}>
+        <defs>
+          <linearGradient id="linear-gradient-rsi" />
+        </defs>
+        <g className="content">
+          <circle className="selectionCircle"></circle>
+          <text className="hoverText" />
+        </g>
+        <g className="axes">
+          <g className="x-axis-group" />
+          <g className="y-axis-group" />
+          <g className="y-axis-grid" />
+          <text className="title-text" />
+        </g>
+        <rect className="overlayRect" />
+      </svg>
     </div>
   );
 }

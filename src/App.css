@@ -1,3 +1,6 @@
+:root {
+  --primaryColor: #332f4f;
+}
 body {
   font-family: Poppins;
   padding: 0;
@@ -69,14 +72,15 @@ svg {
 }
 
 .selectionCircle {
-  fill: #06cbf8;
+
+  fill: var(--primaryColor);
   stroke:white;
   stroke-width: 2px;
 }
 
 .mainChartLine {
-  stroke-width: 3px;
-  stroke: #06cbf8;
+  stroke-width: 2px;
+  stroke: var(--primaryColor);
   fill: none;
 }
 
