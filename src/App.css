@@ -9,15 +9,13 @@ body {
 
 #tickerList {
   margin-left: 10px;
-  /* margin-top: 20px; */
-
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
   bottom: 0;
   width: 220px;
-
   overflow-y: auto;
+  height: 100%;
 }
 
 #tickerList a {
@@ -39,16 +37,18 @@ body {
   row-gap: 20px;
 }
 
-/* @media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1400px) {
   #contentGrid {
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
   }
-} */
+}
 
 #tickerList a {
   color: #332f4f;
   text-decoration: none;
+  padding-bottom: 2px;
+  font-size: 18px;
 }
 
 #tickerList a.selected {
@@ -65,6 +65,7 @@ body {
 
 .viz-wrapper {
   height: 100%;
+  min-height: 400px;
 }
 
 svg {
@@ -93,4 +94,18 @@ svg {
 text {
   font-family: Poppins;
   font-size: 14px;
+}
+
+input {
+  max-width: 80%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: none;
+  border-bottom: 2px solid var(--primaryColor);
+  font-size: 16px;
+  font-family: Poppins;
+}
+
+input:focus {
+  outline: none;
 }

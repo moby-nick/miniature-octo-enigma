@@ -6,6 +6,7 @@ import AdxChart from "./AdxChart";
 import RsiChart from "./RsiChart";
 import MovingAverageChart from "./MovingAverageChart";
 import PriceChart from "./PriceChart";
+const classNames = require("classnames");
 
 function App() {
   const { data, loading } = useData();
@@ -20,8 +21,24 @@ function App() {
     data: null,
     selected: null,
   });
+  const [filter, setFilter] = useState("");
 
-  const margin = { left: 120, right: 70, top: 50, bottom: 50 };
+  const margin = { left: 120, right: 30, top: 50, bottom: 50 };
+
+  const getTickerClass = (ticker, i) => {
+    if (ticker === defaultTicker)
+      console.log(
+        "recaculating, this time BTC is ",
+        config.ticker === null && ticker === defaultTicker
+      );
+    return classNames({
+      ticker: true,
+      [`ticker-${i}`]: true,
+      selected:
+        (config.ticker === null && ticker === defaultTicker) ||
+        ticker === config.ticker,
+    });
+  };
 
   const handleConfigChange = (config) => {
     setConfig(config);
@@ -43,20 +60,6 @@ function App() {
   if (!loading) {
     const grouped = d3.group(data, (d) => d.symbol);
     tickers = [...grouped.keys()].sort();
-
-    const defaultIndex = tickers.indexOf(defaultTicker);
-    if (defaultIndex > 0) {
-      // filterTickers(defaultTicker, defaultIndex);
-      console.log("found the default: ", defaultTicker, defaultIndex);
-      // d3.select(`.ticker-${defaultIndex}`).classed("selected", true);
-
-      // setConfig((config) => ({
-      //   ...config,
-      //   data: data.filter((d) => d.symbol === defaultTicker),
-      //   ticker: defaultTicker,
-      // }));
-      // filterTickers(defaultTicker, defaultIndex)
-    }
   }
 
   return (
@@ -64,20 +67,27 @@ function App() {
       {loading && <div className="loading">Loading data, please wait</div>}
       {!loading && (
         <div id="tickerList">
-          {tickers.map((ticker, i) => (
-            <a
-              key={i}
-              className={`ticker ticker-${i} ${
-                config.ticker === null && ticker === defaultTicker
-                  ? "selected"
-                  : ""
-              }`}
-              href="#"
-              onClick={() => filterTickers(ticker, i)}
-            >
-              {ticker}
-            </a>
-          ))}
+          <h1>Choose</h1>
+          <input
+            id="filter"
+            name="filter"
+            type="text"
+            placeholder="Filter ..."
+            value={filter}
+            onChange={(event) => setFilter(event.target.value)}
+          />
+          {tickers
+            .filter((f) => new RegExp(filter, "i").test(f))
+            .map((ticker, i) => (
+              <a
+                key={i}
+                className={getTickerClass(ticker, i)}
+                href="#"
+                onClick={() => filterTickers(ticker, i)}
+              >
+                {ticker}
+              </a>
+            ))}
         </div>
       )}
       {!loading && (

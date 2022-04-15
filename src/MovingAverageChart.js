@@ -154,16 +154,19 @@ function MovingAverageChart({ config, setConfig, margin }) {
       .attr("class", "mainChartLine")
       .attr("d", line(config.data));
 
-    content
-      .selectAll(".selectionCircle")
-      .attr("cx", config.selected ? x(config.data[config.selected].date) : 0)
-      .attr(
-        "cy",
-        config.selected ? y(config.data[config.selected].trend_sma_slow) : 0
-      )
-      .attr("r", 5)
-      .attr("class", "selectionCircle")
-      .raise();
+    if (config.selected) {
+      content
+        .selectAll(".selectionCircle")
+        .attr("cx", config.selected ? x(config.data[config.selected].date) : 0)
+        .attr(
+          "cy",
+          config.selected ? y(config.data[config.selected].trend_sma_slow) : 0
+        )
+        .attr("r", 5)
+        .attr("class", "selectionCircle")
+        .attr("opacity", 1)
+        .raise();
+    }
 
     svg
       .selectAll(".overlayRect")
@@ -191,7 +194,7 @@ function MovingAverageChart({ config, setConfig, margin }) {
     <div ref={wrapperRef} className="viz-wrapper">
       <svg ref={svgRef}>
         <g className="content">
-          <circle className="selectionCircle"></circle>
+          <circle className="selectionCircle" opacity={0}></circle>
           <text className="hoverText" />
         </g>
         <g className="axes">

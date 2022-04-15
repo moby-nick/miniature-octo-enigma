@@ -174,16 +174,19 @@ function AdxChart({ config, setConfig, margin }) {
       .attr("class", "mainChartLine gradients")
       .attr("d", line(config.data));
 
-    content
-      .selectAll(".selectionCircle")
-      .attr("cx", config.selected ? x(config.data[config.selected].date) : 0)
-      .attr(
-        "cy",
-        config.selected ? y(config.data[config.selected].trend_adx) : 0
-      )
-      .attr("r", 5)
-      .attr("class", "selectionCircle gradients")
-      .raise();
+    if (config.selected) {
+      content
+        .selectAll(".selectionCircle")
+        .attr("cx", config.selected ? x(config.data[config.selected].date) : 0)
+        .attr(
+          "cy",
+          config.selected ? y(config.data[config.selected].trend_adx) : 0
+        )
+        .attr("r", 5)
+        .attr("class", "selectionCircle gradients")
+        .attr("opacity", 1)
+        .raise();
+    }
 
     svg
       .selectAll(".overlayRect")
@@ -214,7 +217,7 @@ function AdxChart({ config, setConfig, margin }) {
           <linearGradient id="linear-gradient-adx" />
         </defs>
         <g className="content">
-          <circle className="selectionCircle"></circle>
+          <circle className="selectionCircle" opacity={0}></circle>
           <text className="hoverText" />
         </g>
         <g className="axes">
