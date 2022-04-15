@@ -55,6 +55,17 @@ function App() {
     d3.select(`.ticker-${i}`).classed("selected", true);
   };
 
+  const handleKeyDown = (event) => {
+    if (
+      event.key === "Enter" &&
+      tickers.filter((f) => new RegExp(filter, "i").test(f)).length === 1
+    ) {
+      const ticker = tickers.filter((f) => new RegExp(filter, "i").test(f))[0];
+
+      filterTickers(ticker, 0)
+    }
+  };
+
   let tickers;
 
   if (!loading) {
@@ -69,12 +80,14 @@ function App() {
         <div id="tickerList">
           <h1>Choose</h1>
           <input
+            autoFocus
             id="filter"
             name="filter"
             type="text"
             placeholder="Filter ..."
             value={filter}
             onChange={(event) => setFilter(event.target.value)}
+            onKeyDown={handleKeyDown}
           />
           {tickers
             .filter((f) => new RegExp(filter, "i").test(f))
