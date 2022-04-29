@@ -39,6 +39,13 @@ function App() {
         ticker === config.ticker,
     });
   };
+  const [showToggle, setShowToggle] = useState(false);
+  const toggleMenu = (state) => {
+    if (state === false) {
+      return;
+    }
+    setShowToggle(!showToggle);
+  };
 
   const handleConfigChange = (config) => {
     setConfig(config);
@@ -53,6 +60,7 @@ function App() {
 
     d3.selectAll(`.ticker`).classed("selected", false);
     d3.select(`.ticker-${i}`).classed("selected", true);
+    toggleMenu();
   };
 
   const handleKeyDown = (event) => {
@@ -62,7 +70,7 @@ function App() {
     ) {
       const ticker = tickers.filter((f) => new RegExp(filter, "i").test(f))[0];
 
-      filterTickers(ticker, 0)
+      filterTickers(ticker, 0);
     }
   };
 
@@ -75,9 +83,25 @@ function App() {
 
   return (
     <div className="App">
+      <div className="hamburger" onClick={() => toggleMenu()}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6 text-white"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M4 6h16M4 12h16M4 18h7"
+          />
+        </svg>
+      </div>
       {loading && <div className="loading">Loading data, please wait</div>}
       {!loading && (
-        <div id="tickerList">
+        <div id="tickerList" className={`${showToggle ? "showList" : ""}`}>
           <h1>Choose</h1>
           <input
             autoFocus
@@ -104,7 +128,7 @@ function App() {
         </div>
       )}
       {!loading && (
-        <div id="contentGrid">
+        <div id="contentGrid" onClick={() => toggleMenu(showToggle)}>
           <PriceChart
             config={config.ticker === null ? defaultConfig : config}
             setConfig={handleConfigChange}

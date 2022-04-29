@@ -37,6 +37,15 @@ body {
   row-gap: 20px;
 }
 
+.hamburger {
+  width: 30px;
+  position: relative;
+  left: 20px;
+  display: none;
+  z-index: 999;
+  cursor: pointer;
+}
+
 @media only screen and (max-width: 1400px) {
   #contentGrid {
     grid-template-columns: 1fr;
@@ -73,9 +82,8 @@ svg {
 }
 
 .selectionCircle {
-
   fill: var(--primaryColor);
-  stroke:white;
+  stroke: white;
   stroke-width: 2px;
 }
 
@@ -108,4 +116,29 @@ input {
 
 input:focus {
   outline: none;
+}
+
+@media (max-width: 767px) {
+  .hamburger {
+    display: block;
+    margin-top: 10px;
+  }
+  .hideHamburger {
+    display: none;
+  }
+  #tickerList {
+    width: 0px;
+    transition: 0.3s;
+    margin: 0;
+    background: #fff;
+    z-index: 999;
+  }
+  #contentGrid {
+    left: 0px;
+  }
+  .showList {
+    width: 200px !important;
+    transition: 0.3s !important;
+    padding-left: 10px;
+  }
 }
