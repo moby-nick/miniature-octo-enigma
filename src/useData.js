@@ -1,13 +1,13 @@
 import * as d3 from "d3";
 import { useState, useEffect } from "react";
 
-export const useData = () => {
+export const useData = (url) => {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('useData.js; idem fetchat ', new Date().getMilliseconds())
-    const promises = [d3.csv("data/chart_data.csv", d3.autoType)];
+    // console.log('useData.js; idem fetchat ', new Date().getMilliseconds())
+    const promises = [d3.csv(url, d3.autoType)];
 
     Promise.all(promises).then((data) => {
       setData(data[0]);

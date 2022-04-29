@@ -9,7 +9,7 @@ import PriceChart from "./PriceChart";
 const classNames = require("classnames");
 
 function App() {
-  const { data, loading } = useData();
+  const { data, loading } = useData("https://storage.googleapis.com/mds-1-general/chart_data.csv");
   const defaultTicker = "BTCUSD";
   const defaultConfig = {
     ticker: defaultTicker,
@@ -86,7 +86,7 @@ function App() {
       <div className="hamburger" onClick={() => toggleMenu()}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6 text-white"
+          className="h-6 w-6 text-white"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
