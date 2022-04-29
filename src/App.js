@@ -9,7 +9,7 @@ import PriceChart from "./PriceChart";
 const classNames = require("classnames");
 
 function App() {
-  const { data, loading } = useData("https://storage.googleapis.com/mds-1-general/chart_data.csv");
+  const { data, loading } = useData("https://storage.googleapis.com/download/storage/v1/b/mds-1-general/o/chart_data.csv?alt=media");
   const defaultTicker = "BTCUSD";
   const defaultConfig = {
     ticker: defaultTicker,
