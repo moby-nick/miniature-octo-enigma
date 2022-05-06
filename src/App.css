@@ -169,6 +169,7 @@ input:focus {
 .dark input {
   background-color: var(--dark-bg-color);
   border-color: var(--greyish);
+  color: var(--greyish)
 }
 
 .dark input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
