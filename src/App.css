@@ -1,10 +1,31 @@
 :root {
   --primaryColor: #332f4f;
+  --dark-bg-color: #332f4f;
+  --light-bg-color: #f9f9fe;
+
+  --lightBlue: #06cbf8;
+  --greyish: #bacfe7;
+  --redish: #fa4441;
+  --orange: #fa993a;
+  --green: #89ea3c;
+  --torquise: #3fbbd7;
+  --purpleish: #c174dc;
+
 }
 body {
   font-family: Poppins;
   padding: 0;
   margin: 0;
+}
+
+.App {
+  position: relative;
+  height: 100vh;
+  background-color: var(--light-bg-color);
+}
+
+.dark {
+  background-color: var(--dark-bg-color);
 }
 
 #tickerList {
@@ -20,6 +41,19 @@ body {
 
 #tickerList a {
   display: block;
+
+  color: #332f4f;
+  text-decoration: none;
+  padding-bottom: 2px;
+  font-size: 18px;
+}
+
+.dark #tickerList a {
+  color: var(--greyish);
+}
+
+.dark h1 {
+  color: var(--greyish)
 }
 
 #contentGrid {
@@ -53,23 +87,8 @@ body {
   }
 }
 
-#tickerList a {
-  color: #332f4f;
-  text-decoration: none;
-  padding-bottom: 2px;
-  font-size: 18px;
-}
-
 #tickerList a.selected {
   font-weight: 700;
-}
-
-.App {
-  /* width: 500px; */
-  /* border: solid 1px #000; */
-  /* display: flex; */
-  position: relative;
-  height: 100vh;
 }
 
 .viz-wrapper {
@@ -87,16 +106,45 @@ svg {
   stroke-width: 2px;
 }
 
+.dark .selectionCircle {
+  /* stroke: var(--dark-bg-color) */
+}
+
 .mainChartLine {
   stroke-width: 2px;
   stroke: var(--primaryColor);
   fill: none;
 }
 
+.dark .mainChartLine {
+  stroke: white;
+}
+
 .backdropLine {
   stroke-width: 6px;
   stroke: white;
   fill: none;
+}
+
+.dark .tick text {
+  fill: var(--greyish)
+}
+
+.dark .tick line {
+  stroke: var(--greyish)
+}
+
+.dark .backdropLine {
+  stroke: var(--dark-bg-color)
+}
+
+.dark .title-text {
+  fill: var(--greyish);
+  opacity: 1;
+}
+
+.dark .hoverText {
+  fill: var(--greyish)
 }
 
 text {
@@ -116,6 +164,16 @@ input {
 
 input:focus {
   outline: none;
+}
+
+.dark input {
+  background-color: var(--dark-bg-color);
+  border-color: var(--greyish);
+}
+
+.dark input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: var(--greyish);
+  opacity: 1; /* Firefox */
 }
 
 @media (max-width: 767px) {

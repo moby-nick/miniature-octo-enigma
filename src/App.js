@@ -23,6 +23,11 @@ function App() {
   });
   const [filter, setFilter] = useState("");
 
+  var theme = 'dark' //other option is "light"
+
+  var locStorageTheme = localStorage.getItem("theme")
+  if (locStorageTheme) theme = locStorageTheme
+
   const margin = { left: 120, right: 30, top: 50, bottom: 50 };
 
   const getTickerClass = (ticker, i) => {
@@ -82,7 +87,7 @@ function App() {
   }
 
   return (
-    <div className="App">
+    <div className={`App ${theme}`}>
       <div className="hamburger" onClick={() => toggleMenu()}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
